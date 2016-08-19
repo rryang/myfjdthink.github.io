@@ -3,10 +3,10 @@
 <head>
     <meta charset="utf-8"/>
     <title>自动寻路贪吃蛇</title>
-    <script type="text/javascript" src="AStar.js"></script>
+    <script type="text/javascript" src="Astar.js"></script>
 </head>
 <body>
-<canvas id="myCanvas" width="480 " height="480" style="border:1px solid #d3d3d3;">
+<canvas id="myCanvas" width="540 " height="540" style="border:1px solid #d3d3d3;">
     Your browser does not support the HTML5 canvas tag.
 </canvas>
 <div>
@@ -24,8 +24,8 @@
 
 <script>
     var ctx = document.getElementById("myCanvas").getContext("2d");
-    var pointSize = 20;
-    var length = 24
+    var pointSize = 30;
+    var length = 18
     //蛇
     var snake = [{
         x: 10,
