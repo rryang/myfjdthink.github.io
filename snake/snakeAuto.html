@@ -26,33 +26,23 @@
     var ctx = document.getElementById("myCanvas").getContext("2d");
     var pointSize = 20;
     var length = 24
-    //方向
-    var up = 38, down = 40, left = 37, right = 39;
     //蛇
-    //    var snake = [{
-    //        x: 10,
-    //        y: 9
-    //    }, {
-    //        x: 10,
-    //        y: 8
-    //    }, {
-    //        x: 10,
-    //        y: 7
-    //    }, {
-    //        x: 10,
-    //        y: 6
-    //    }, {
-    //        x: 10,
-    //        y: 5
-    //    }];
     var snake = [{
-        x: 3,
-        y: 3
+        x: 10,
+        y: 9
+    }, {
+        x: 10,
+        y: 8
+    }, {
+        x: 10,
+        y: 7
+    }, {
+        x: 10,
+        y: 6
+    }, {
+        x: 10,
+        y: 5
     }];
-    //co表示蛇前进的方向，默认向下
-    var direct = down;
-    //自动寻路
-    var auto = true;
     //flood食物
     var flood = null;
     var grid = null;
@@ -146,17 +136,6 @@
         ctx.fillStyle = "#000000";
     }
 
-    //    function drawGrid() {
-    //        console.log('drawPaths', paths.length);
-    //        ctx.fillStyle = "#00ffff";
-    //        for (var i = 0; i < length - 1; i++)
-    //            for (var j = 0; j < length; j++) {
-    //                if (grid[i][j])
-    //                    ctx.fillRect(i * pointSize, j * pointSize, pointSize, pointSize);
-    //            }
-    //        ctx.fillStyle = "#000000";
-    //    }
-
     function nodeEqual(nodeA, nodeB) {
         return nodeA.x === nodeB.x
                 && nodeA.y === nodeB.y
@@ -170,6 +149,7 @@
                 x: (Math.random() * length >>> 0)
             };
     }
+
     function moveSnake() {
         try {
             var next = getNext()
@@ -260,15 +240,15 @@
         }
     }
 
-    function getAstarPath(start, end, tail) {
+    /**
+     * 找到两点之间的路径
+     * @param start
+     * @param end
+     * @param tail
+     * @returns {*}
+     */
+    function getAstarPath(start, end) {
         var path = AStar(initGrid(snake), [start.x, start.y], [end.x, end.y], "Manhattan")
-//        if (tail && path.length <= 1) {
-//            console.log('脸都要碰到屁股啦', path);
-//            if(path.length === 0){
-//                path.push([])
-//            }
-//            path.push([end.x, end.y])
-//        }
         return path
     }
 
