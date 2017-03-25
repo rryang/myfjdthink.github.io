@@ -6,7 +6,7 @@
 
 </head>
 <body>
-<canvas id="myCanvas" width="500" height="700">
+<canvas id="myCanvas" width="900" height="1500">
     您的浏览器不支持canvas，建议使用最新版的Chrome
 </canvas>
 <script>
@@ -38,7 +38,7 @@
   function Sudoku (ctx, util, config) {
     this.ctx = ctx
     this.nums = []
-    var length = 480
+    var length = 900
     var total = 9
     this.point = null
     this.config = {
@@ -61,33 +61,55 @@
       this.addListener()
     },
     initNums: function __initNums () {
-      var nums = [
-        [0, 7, 3, 0, 0, 0, 2, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 9],
-        [1, 0, 0, 0, 5, 2, 0, 0, 7],
-
-        [0, 0, 0, 0, 0, 7, 0, 0, 4],
-        [0, 6, 0, 2, 1, 0, 7, 3, 8],
-        [0, 0, 0, 9, 0, 0, 0, 0, 0],
-
-        [0, 0, 0, 0, 0, 0, 6, 0, 0],
-        [2, 4, 0, 6, 0, 8, 0, 1, 0],
-        [3, 5, 6, 0, 0, 0, 0, 7, 0],
-      ]
-      this.nums = nums.map(function (lines) {
-        return lines.map(function (num) {
-          return {
-            fillStyle: "black",      // 文字颜色
-            bgColor: "",      // 背景颜色
-            num: num,      // 题目上的数字
-            userNum: '',  // 用户填的数字的数字
-            vars: [],       // 方格内还可以填的数字
-            get number () {
-              return this.num || this.userNum
+      var _this = this
+      genNums()
+      readDB()
+      function readDB () {
+        if (localStorage.strNums) {
+          try {
+            console.log('读取数据');
+            var nums = JSON.parse(localStorage.strNums)
+            for (var i = 0; i < nums.length; i++) {
+              for (var j = 0; j < nums[i].length; j++) {
+                _this.nums[i][j].userNum = nums[i][j].userNum
+              }
             }
+          } catch (err) {
+            console.log('读取数据出错', err);
           }
+        }
+      }
+
+      function genNums () {
+        console.log('gen nums ');
+        var nums = [
+          [0, 7, 3, 0, 0, 0, 2, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 9],
+          [1, 0, 0, 0, 5, 2, 0, 0, 7],
+
+          [0, 0, 0, 0, 0, 7, 0, 0, 4],
+          [0, 6, 0, 2, 1, 0, 7, 3, 8],
+          [0, 0, 0, 9, 0, 0, 0, 0, 0],
+
+          [0, 0, 0, 0, 0, 0, 6, 0, 0],
+          [2, 4, 0, 6, 0, 8, 0, 1, 0],
+          [3, 5, 6, 0, 0, 0, 0, 7, 0],
+        ]
+        _this.nums = nums.map(function (lines) {
+          return lines.map(function (num) {
+            return {
+              fillStyle: "black",      // 文字颜色
+              bgColor: "",      // 背景颜色
+              num: num,      // 题目上的数字
+              userNum: '',  // 用户填的数字的数字
+              vars: [],       // 方格内还可以填的数字
+              get number () {
+                return this.num || this.userNum
+              }
+            }
+          })
         })
-      })
+      }
     },
     // 渲染除键盘外的整个页面
     drawAll: function () {
@@ -97,6 +119,18 @@
       this.drawLines()
       this.findVariable()
       this.drawPoints()
+      this.saveDB()
+    },
+    restart: function () {
+      console.log('restart ');
+      localStorage.strNums = null
+      this.initNums()
+      this.drawAll()
+    },
+    saveDB: function () {
+      var strNums = JSON.stringify(this.nums)
+      // console.log('save nums', strNums);
+      localStorage.strNums = strNums
     },
     drawLines: function drawLines () {
       var step = this.config.step
@@ -171,7 +205,7 @@
       // drawCoordinate(i, j, x, y)
       // 画剩余的可选值
       function drawVars (vars, x, y) {
-        if (vars && vars.length > 3) return
+//        if (vars && vars.length > 3) return
         var smallStep = step / rectangleSize
         var index = 1
         for (var i = 0; i < rectangleSize; i++) {
@@ -199,9 +233,9 @@
     drawKeyboard: function drawNum () {
       var length = this.config.length
       var step = this.config.step
-      var kb_length = this.config.length / 3
+      var kb_length = length / 3
       var offset_y = length + step
-      var offset_x = kb_length - step
+      var offset_x = step
       var ctx = this.ctx
       drawLines()
       drawNumber()
@@ -209,11 +243,11 @@
         for (var i = 0; i < 3 + 1; i++) {
           var start_x = 0
           var start_y = i * step
-          var end_x = step * 5
+          var end_x = step * 7
           var end_y = i * step
           line(start_x + offset_x, start_y + offset_y, end_x + offset_x, end_y + offset_y, i)
         }
-        for (var i = 0; i < 5 + 1; i++) {
+        for (var i = 0; i < 7 + 1; i++) {
           var start_x = i * step
           var start_y = 0
           var end_x = i * step
@@ -233,7 +267,7 @@
         var index = 1
         for (var i = 0; i < 3; i++) {
           for (var j = 0; j < 3; j++) {
-            var x_inner = offset_x + step + j * step + (step / 4)
+            var x_inner = offset_x + 2 * step + j * step + (step / 4)
             var y_inner = offset_y + kb_length - i * step - (step / 8)
             ctx.fillStyle = "#ff8c43";
             ctx.font = (step) + "px serif";
@@ -242,7 +276,8 @@
         }
       }
 
-      ctx.fillText('C', offset_x + 4 * step + 10, offset_y + 2 * step - 8);
+      ctx.fillText('C', offset_x + 6 * step + 10, offset_y + 2 * step - 8);
+      ctx.fillText('R', offset_x + 10, offset_y + 2 * step - 8);
     },
     // 找到每个方格可以填充的数据
     findVariable: function findVariable () {
@@ -322,12 +357,13 @@
           }
         })
       })
-      point.bgColor = color;
+      point.bgColor = "#ffd141";
       this.drawAll()
     },
     clickKeyboard: function clickPoint (x, y) {
       var keys = {
-        '116': 0,
+        '111': 'R',
+        '117': 0,
         '123': 1,
         '124': 2,
         '125': 3,
@@ -340,10 +376,15 @@
       }
       var key = y + '' + x
       if (keys[key] == null) return
+      var userNum = keys[key]
+      if (userNum === 'R') {
+        this.restart()
+        return
+      }
       if (this.point) {
-        var userNum = keys[key]
         console.log('input %s to %s %s', userNum, this.point.x, this.point.y);
         this.nums[this.point.x][this.point.y].userNum = userNum
+        if (userNum) {this.clickPoint(this.point.y, this.point.x)}
       }
       this.drawAll()
     },
@@ -371,16 +412,14 @@
         } else {
           _this.clickKeyboard(real_x, real_y)
         }
-      }, false);
+      }, true);
     }
   }
   var ctx2 = document.getElementById("myCanvas").getContext("2d");
+  var sudoku = new Sudoku(ctx2, new Utils(), {});
   window.onload = function () {
-    var sudoku = new Sudoku(ctx2, new Utils(), {});
     sudoku.init();
   }
-
-
 </script>
 </body>
 </html>
